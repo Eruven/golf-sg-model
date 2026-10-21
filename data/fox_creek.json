@@ -1,0 +1,28 @@
+{
+  "name": "Fox Creek Golf Club (Smyrna, GA)",
+  "tees": "Green",
+  "course_rating": 59.9,
+  "slope": 105,
+  "default_width": 45,
+  "_sources": "Scorecard and rating: https://www.golfify.io/courses/fox-creek-golf-club-smyrna ; widths and trouble paced off by the author (trees both sides ~45 yds; hole 1 OB both sides; holes 3 and 16 OB right).",
+  "holes": [
+    {"number": 1, "par": 4, "yards": 356, "stroke_index": 1, "trouble": "OB"},
+    {"number": 2, "par": 3, "yards": 150, "stroke_index": 9},
+    {"number": 3, "par": 4, "yards": 262, "stroke_index": 15, "trouble": "OBR"},
+    {"number": 4, "par": 3, "yards": 156, "stroke_index": 7},
+    {"number": 5, "par": 3, "yards": 158, "stroke_index": 13},
+    {"number": 6, "par": 5, "yards": 397, "stroke_index": 17, "trouble": "X"},
+    {"number": 7, "par": 3, "yards": 150, "stroke_index": 11},
+    {"number": 8, "par": 3, "yards": 168, "stroke_index": 3},
+    {"number": 9, "par": 4, "yards": 301, "stroke_index": 5, "trouble": "X"},
+    {"number": 10, "par": 3, "yards": 143, "stroke_index": 12},
+    {"number": 11, "par": 4, "yards": 333, "stroke_index": 6, "trouble": "X"},
+    {"number": 12, "par": 3, "yards": 97, "stroke_index": 18},
+    {"number": 13, "par": 3, "yards": 154, "stroke_index": 14},
+    {"number": 14, "par": 4, "yards": 260, "stroke_index": 4, "trouble": "X"},
+    {"number": 15, "par": 3, "yards": 129, "stroke_index": 8},
+    {"number": 16, "par": 4, "yards": 321, "stroke_index": 2, "trouble": "OBR"},
+    {"number": 17, "par": 3, "yards": 149, "stroke_index": 10},
+    {"number": 18, "par": 3, "yards": 118, "stroke_index": 16}
+  ]
+}

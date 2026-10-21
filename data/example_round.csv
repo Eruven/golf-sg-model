@@ -1,0 +1,7 @@
+hole,start_lie,start_dist,end_lie,end_dist,penalty,note
+1,T,356,F,102,0,driver
+1,F,102,G,22,0,full SW
+1,G,22,G,3,0,
+1,G,3,H,,0,
+2,T,150,G,25,0,8i
+2,G,25,H,,0,
