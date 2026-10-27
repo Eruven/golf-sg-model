@@ -357,3 +357,124 @@ class Explainer(Scene):
         self.play(FadeIn(foot))
         self.wait(2.0)
         self.play(FadeOut(g), FadeOut(foot))
+
+
+# ====================================================================== SHORT CUT
+class Short(Scene):
+    """~70 s cut for episode 1: expected strokes -> one shot -> the tee model, shown as shots, not tables."""
+
+    def construct(self):
+        Explainer.scene_expected_strokes(self)
+        self.short_one_shot()
+        self.short_tee_shots()
+
+    def short_one_shot(self):
+        h = Text("A shot's value is how much it moved that number", font="DejaVu Sans", color=WHITE_T).scale(0.55).to_edge(UP)
+        eq = MathTex(r"\text{SG} = E(\text{start}) - E(\text{end}) - 1", color=WHITE_T).scale(1.05).shift(UP * 1.2)
+        self.play(FadeIn(h), Write(eq))
+        start = VGroup(Text("102 yds, fairway", font="DejaVu Sans", color=GREY_T).scale(0.4),
+                       Text("3.03", font="DejaVu Sans", weight=BOLD, color=GOLD_T).scale(0.8)).arrange(DOWN, buff=0.15).shift(LEFT * 3.2 + DOWN * 0.8)
+        end = VGroup(Text("22 ft, on the green", font="DejaVu Sans", color=GREY_T).scale(0.4),
+                     Text("1.95", font="DejaVu Sans", weight=BOLD, color=GOLD_T).scale(0.8)).arrange(DOWN, buff=0.15).shift(RIGHT * 3.2 + DOWN * 0.8)
+        arrow = Arrow(start.get_right(), end.get_left(), color=BLUE_T, buff=0.3)
+        self.play(FadeIn(start), GrowArrow(arrow), FadeIn(end))
+        calc = MathTex(r"3.03 - 1.95 - 1 = ", r"+0.08", color=WHITE_T).scale(0.95).shift(DOWN * 2.3)
+        calc[1].set_color(GREEN_T)
+        self.play(Write(calc))
+        self.wait(1.4)
+        self.play(*[FadeOut(m) for m in [h, eq, start, end, arrow, calc]])
+
+    def short_tee_shots(self):
+        h = Text("The problem: standard strokes gained doesn't know the course", font="DejaVu Sans", color=WHITE_T).scale(0.5).to_edge(UP)
+        self.play(FadeIn(h))
+
+        # top-down hole 1
+        YPX, XPX = 0.0146, 0.07
+        corridor_w = 45 * XPX
+        corr = Rectangle(width=corridor_w, height=5.2, color=GREEN_T, fill_opacity=0.12, stroke_width=1).shift(DOWN * 0.2 + LEFT * 2.6)
+        ob_l = Rectangle(width=2.0, height=5.2, color=RED_T, fill_opacity=0.10, stroke_width=0).next_to(corr, LEFT, buff=0)
+        ob_r = ob_l.copy().next_to(corr, RIGHT, buff=0)
+        obl = Text("OB", font="DejaVu Sans", weight=BOLD, color=RED_T).scale(0.5).move_to(ob_l).shift(DOWN * 1.8)
+        obr = obl.copy().move_to(ob_r).shift(DOWN * 1.8)
+        tee_pt = corr.get_bottom() + UP * 0.15
+        tee = Dot(tee_pt, color=WHITE_T)
+        label = Text("Hole 1 · 356 yds · 45 yds wide · OB both sides", font="DejaVu Sans", color=GREY_T).scale(0.38).next_to(corr, DOWN, buff=0.2)
+        self.play(FadeIn(corr), FadeIn(ob_l), FadeIn(ob_r), FadeIn(obl), FadeIn(obr), FadeIn(tee), FadeIn(label))
+
+        cx = corr.get_center()[0]; half = corridor_w / 2
+        rng = np.random.default_rng(7)
+
+        def shots(dist, sigma, n, col_in):
+            pts, dots = [], VGroup()
+            xs = rng.normal(0, sigma, n); ys = rng.normal(dist, 9, n)
+            for x, y in zip(xs, ys):
+                px, py = cx + x * XPX, tee_pt[1] + y * YPX
+                inside = abs(x) < 22.5
+                dots.add(Dot([px, py, 0], radius=0.055, color=col_in if inside else RED_T))
+            return dots
+
+        # driver: 40 shots
+        panel = VGroup(Text("Scratch golfer, driver", font="DejaVu Sans", weight=BOLD, color=WHITE_T).scale(0.44),
+                       Text("262 yds · lateral σ ≈ 20 yds", font="DejaVu Sans", color=GREY_T).scale(0.36)).arrange(DOWN, aligned_edge=LEFT, buff=0.18).move_to(RIGHT * 3.4 + UP * 2.0)
+        self.play(FadeIn(panel))
+        d_dots = shots(262, 19.6, 40, GOLD_T)
+        self.play(LaggedStart(*[FadeIn(d, scale=0.3) for d in d_dots], lag_ratio=0.04), run_time=1.6)
+        n_ob = sum(1 for d in d_dots if d.get_color().to_hex().lower() == RED_T.lower())
+        stat_d = VGroup(Text(f"{n_ob} of 40 out of bounds", font="DejaVu Sans", color=RED_T).scale(0.4),
+                        Text("stroke and distance, play 3 from the tee", font="DejaVu Sans", color=GREY_T).scale(0.33),
+                        Text("hole averages  4.73", font="DejaVu Sans", weight=BOLD, color=GOLD_T).scale(0.5)).arrange(DOWN, aligned_edge=LEFT, buff=0.16).next_to(panel, DOWN, buff=0.35, aligned_edge=LEFT)
+        self.play(FadeIn(stat_d))
+        self.wait(1.4)
+
+        # 5-iron: 40 shots
+        self.play(FadeOut(d_dots), run_time=0.4)
+        panel2 = VGroup(Text("Scratch golfer, 5-iron", font="DejaVu Sans", weight=BOLD, color=WHITE_T).scale(0.44),
+                        Text("185 yds · lateral σ ≈ 13 yds", font="DejaVu Sans", color=GREY_T).scale(0.36)).arrange(DOWN, aligned_edge=LEFT, buff=0.18).move_to(panel, aligned_edge=LEFT)
+        self.play(Transform(panel, panel2), FadeOut(stat_d), run_time=0.5)
+        i_dots = shots(185, 13.0, 40, BLUE_T)
+        self.play(LaggedStart(*[FadeIn(d, scale=0.3) for d in i_dots], lag_ratio=0.04), run_time=1.6)
+        n_ob2 = sum(1 for d in i_dots if d.get_color().to_hex().lower() == RED_T.lower())
+        stat_i = VGroup(Text(f"{n_ob2} of 40 out of bounds", font="DejaVu Sans", color=BLUE_T).scale(0.4),
+                        Text("171 yds left, almost always in play", font="DejaVu Sans", color=GREY_T).scale(0.33),
+                        Text("hole averages  4.55", font="DejaVu Sans", weight=BOLD, color=GOLD_T).scale(0.5)).arrange(DOWN, aligned_edge=LEFT, buff=0.16).next_to(panel, DOWN, buff=0.35, aligned_edge=LEFT)
+        self.play(FadeIn(stat_i))
+        verdict = Text("Scratch's best play is the 5-iron.\nThis hole is worth 4.55, not 4.0.", font="DejaVu Sans", color=GREEN_T, line_spacing=0.9).scale(0.4).next_to(stat_i, DOWN, buff=0.4, aligned_edge=LEFT)
+        self.play(FadeIn(verdict))
+        self.wait(1.8)
+
+        # one driver comes in, in play, 94 yds left
+        self.play(FadeOut(i_dots), FadeOut(panel), FadeOut(stat_i), FadeOut(verdict), run_time=0.5)
+        h2 = Text("Now I hit driver here, and it comes off", font="DejaVu Sans", color=WHITE_T).scale(0.5).to_edge(UP)
+        self.play(Transform(h, h2))
+        land = [cx + 6 * XPX, tee_pt[1] + 262 * YPX, 0]
+        path = ArcBetweenPoints(tee_pt, land, angle=-0.35, color=WHITE_T, stroke_width=2)
+        ball = Dot(land, radius=0.09, color=WHITE_T)
+        self.play(Create(path), run_time=0.9)
+        self.play(FadeIn(ball, scale=0.3))
+        left = Text("94 yds left", font="DejaVu Sans", color=GREY_T).scale(0.36).next_to(ball, RIGHT, buff=0.15)
+        self.play(FadeIn(left))
+        self.wait(0.4)
+
+        q = Text("What was that shot worth?", font="DejaVu Sans", weight=BOLD, color=WHITE_T).scale(0.46).move_to(RIGHT * 3.4 + UP * 2.0)
+        self.play(FadeIn(q))
+        rows = [("Standard SG, tour baseline", "+0.12", GREY_T, 0.5),
+                ("Scratch baseline, any course", "+0.22", GREY_T, 0.5),
+                ("This model, this hole", "+0.49", GREEN_T, 0.7)]
+        tags = VGroup()
+        for name, v, col, sc in rows:
+            tags.add(VGroup(Text(name, font="DejaVu Sans", color=GREY_T if col == GREY_T else WHITE_T).scale(0.38),
+                            Text(v, font="DejaVu Sans", weight=BOLD, color=col).scale(sc)).arrange(RIGHT, buff=0.35))
+        tags.arrange(DOWN, aligned_edge=LEFT, buff=0.3).next_to(q, DOWN, buff=0.45, aligned_edge=LEFT)
+        for t in tags:
+            t[1].align_to([6.6, 0, 0], RIGHT)
+        for t in tags:
+            self.play(FadeIn(t, shift=RIGHT * 0.2), run_time=0.5)
+            self.wait(0.5)
+        why = Text("The other two see a 356-yard hole and expect a driver.\nThis one knows how often a driver here ends up OB,\nso a drive that stays in play gets the credit it earned.",
+                   font="DejaVu Sans", color=GREY_T, line_spacing=0.9).scale(0.34).next_to(tags, DOWN, buff=0.4, aligned_edge=LEFT)
+        self.play(FadeIn(why))
+        self.wait(2.6)
+        foot = Text("github.com/Eruven/golf-sg-model", font="DejaVu Sans", color=GREY_T).scale(0.34).to_edge(DOWN, buff=0.25).to_edge(RIGHT, buff=0.4)
+        self.play(FadeIn(foot))
+        self.wait(1.2)
+        self.play(*[FadeOut(m) for m in self.mobjects])
