@@ -470,7 +470,7 @@ class Short(Scene):
         for t in tags:
             self.play(FadeIn(t, shift=RIGHT * 0.2), run_time=0.5)
             self.wait(0.5)
-        why = Text("The other two see a 356-yard hole and expect a driver.\nThis one knows how often a driver here ends up OB,\nso a drive that stays in play gets the credit it earned.",
+        why = Text("The other two see a 356-yard hole\nand expect a driver.\nThis one knows how often a driver\nhere ends up OB, so a drive that\nstays in play gets the credit it earned.",
                    font="DejaVu Sans", color=GREY_T, line_spacing=0.9).scale(0.34).next_to(tags, DOWN, buff=0.4, aligned_edge=LEFT)
         self.play(FadeIn(why))
         self.wait(2.6)
