@@ -184,3 +184,7 @@ Code, tests and the spreadsheet: [github.com/Eruven/golf-sg-model](https://githu
 - PGA Tour make and three-putt rates by distance. Golfing Focus / Broadie. <https://golfingfocus.com/what-percentage-of-putts-do-pros-make-tv-does-not-tell-the-story/>
 - Fox Creek Golf Club scorecard and rating. Golfify. <https://www.golfify.io/courses/fox-creek-golf-club-smyrna>
 - Mark Broadie, *Every Shot Counts*, Gotham Books, 2014.
+
+---
+
+*This note is licensed CC BY-NC 4.0. Code: github.com/Eruven/golf-sg-model (PolyForm Noncommercial). Commercial use: dxie72@gatech.edu.*

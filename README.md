@@ -70,6 +70,15 @@ All assumptions live in `golfsg/params.py` with their basis stated. The intended
 
 `data/Fox_Creek_Scratch_SG.xlsx` is the same model with live formulas (shot log, per-round category totals, editable inputs). `scripts/build_workbook.py` regenerates it.
 
+## License and use in videos
+
+Code: [PolyForm Noncommercial 1.0.0](LICENSE). Methods note: CC BY-NC 4.0. Free for personal use, study and
+non-commercial content with credit ("strokes gained model by David Xie, github.com/Eruven/golf-sg-model").
+
+If you make golf content and want course-specific, scratch-calibrated strokes gained on screen for your own
+rounds — a course file for your home course and a shot-by-shot breakdown — get in touch: dxie72@gatech.edu.
+Commercial use (apps, products, paid services) needs a separate agreement.
+
 ## Sources
 
 - [Putting make percentage by handicap — MyGolfSpy / Shot Scope](https://mygolfspy.com/news-opinion/putting-make-percentage-by-handicap-full-chart-are-you-above-or-below-average/)
