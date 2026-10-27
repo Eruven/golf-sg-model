@@ -73,9 +73,16 @@ def test_ob_harder_than_trees(base):
         assert club_expectation(321, 45, "OB", c, base) > club_expectation(321, 45, "OBR", c, base)
 
 
+def test_good_day_gap_derivation():
+    # mean of the best 8 of 20 normal draws sits ~0.93 sigma below the mean; with sigma ~2.6 that is ~2.4
+    import numpy as np
+    rng = np.random.default_rng(1); x = np.sort(rng.standard_normal((50000, 20)), axis=1)
+    assert abs(x[:, :8].mean() + 0.93) < 0.03
+
+
 def test_calibration_hits_target(cal):
     assert sum(v.adjusted for v in cal.values) == pytest.approx(cal.target)
-    assert cal.target == 59.9
+    assert cal.target == pytest.approx(62.3)
 
 
 def test_si_weights_sum_to_one():
@@ -90,7 +97,7 @@ def test_matches_workbook(cal):
     assert v1.raw == pytest.approx(4.55, abs=0.01) and v1.best_club == "5-iron"
     assert v16.raw == pytest.approx(4.30, abs=0.01)
     assert v2.raw == pytest.approx(3.23, abs=0.01)
-    assert cal.total_adjustment == pytest.approx(-4.25, abs=0.02)
+    assert cal.total_adjustment == pytest.approx(-1.85, abs=0.02)
 
 
 def test_round_sg_telescopes(base, cal):
@@ -109,9 +116,9 @@ def test_putting_untouched_by_course_adjustment(base, cal):
 
 def test_example_hole(base, cal):
     s = score_shot(Shot(1, "T", 356, "F", 102), base, cal)
-    assert s.category == "OTT" and s.sg == pytest.approx(0.38, abs=0.01)
+    assert s.category == "OTT" and s.sg == pytest.approx(0.46, abs=0.01)
     s2 = score_shot(Shot(1, "F", 102, "G", 22), base, cal)
-    assert s2.category == "APP" and s2.sg == pytest.approx(-0.02, abs=0.01)
+    assert s2.category == "APP" and s2.sg == pytest.approx(0.04, abs=0.01)
 
 
 def test_penalty(base, cal):

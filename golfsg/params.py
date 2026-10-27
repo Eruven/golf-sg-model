@@ -30,7 +30,7 @@ class Params:
     recovery_penalty: float = 0.10   # ASSUMPTION
     teed_ball_bonus: float = 0.0     # par-3 tee shot vs same-length fairway shot
     # --- calibration ---
-    good_day_gap: float = 0.0        # 0 = calibrate to the course rating (good-day scratch); ~2.5 = average scratch
+    good_day_gap: float = 2.4        # CR is a good-day score (best 8 of 20). Mean of best 8 of 20 normals = mu - 0.93*sigma; scratch round-to-round sigma ~2.6 strokes -> +2.4 converts CR to an AVERAGE scratch round. 0 = calibrate to CR itself.
     si_weight: float = 0.0           # 0 = spread the course adjustment evenly, 1 = fully by stroke index
     g0: float = 1.85                 # off-green anchor for spreading a hole's adjustment across shots
     # --- tee model ---

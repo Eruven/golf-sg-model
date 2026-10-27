@@ -35,7 +35,7 @@ wb = Workbook()
 ws = wb.active; ws.title = "How To"
 lines = [
  ("Fox Creek Scratch Strokes Gained (data-anchored)", True),
- ("Green tees, 3,802 yards, par 62. Baseline = a scratch golfer, built from published scratch statistics (Shot Scope, Arccos) rather than tour tables plus guesses. Tee-shot expectations are calibrated so the 18 holes sum to the Course Rating (a scratch golfer's good day).", False),
+ ("Green tees, 3,802 yards, par 62. Baseline = a scratch golfer, built from published scratch statistics (Shot Scope, Arccos) rather than tour tables plus guesses. Hole expectations are calibrated so the 18 holes sum to the Course Rating + 2.4, i.e. an average scratch round (the rating itself is a good day).", False),
  ("", False),
  ("How to use", True),
  ("1. Log every shot on 'Shot Log': Round ID, Hole, Start lie, Start distance, End lie, End distance, Penalty.", False),
@@ -49,10 +49,10 @@ lines = [
  ("Approach (50-250 yds): E = 1 + GIR x E(putts from on-green proximity) + (1 - GIR) x E(after a miss), using scratch GIR, proximity and short-game data. Rough and sand use factors on the fairway inputs.", False),
  ("Around the green (<= 50 yds): from scratch up-and-down rates (<25 yds 63%, 25-50 yds 32%, sand save 37%). From 150-250 yds the table takes the better of going for the green and laying up; beyond 250 it is 1 + a layup/advance to a fairway-rough blend.", False),
  ("Tee shots on par 4/5: the tee model on 'Course' (best club for a scratch golfer given fairway width, OB/trees and club dispersion). Par 3s: the approach table from the tee.", False),
- ("Course calibration: the gap between the raw 18-hole total and the Course Rating target is spread across holes and applied ONLY to shots that start off the green, so putting is always measured straight against the scratch putting data.", False),
+ ("Course calibration: the gap between the raw 18-hole total and the target (Course Rating + 2.4, an average scratch round) is spread across holes and applied ONLY to shots that start off the green, so putting is always measured straight against the scratch putting data.", False),
  ("", False),
  ("Reading the numbers", True),
- ("SG per shot = E(start) - E(end) - 1 - penalty. Positive = better than the scratch baseline at Fox Creek. Over a full 18, total SG = Course Rating target - your score.", False),
+ ("SG per shot = E(start) - E(end) - 1 - penalty. Positive = better than an average scratch golfer at Fox Creek. Over a full 18, total SG = (Course Rating + 2.4) - your score.", False),
  ("Categories: OTT = tee shots on par 4/5; APP = shots from >30 yds (incl. par-3 tee shots); ARG = <=30 yds off the green; PUTT = on the green.", False),
  ("Yellow cells with blue text are inputs. Every published number and every assumption is labelled on 'Inputs' and 'Scratch Data'. 'Tour Ref' shows the scratch baseline next to tour values as a sanity check.", False),
 ]
@@ -67,7 +67,7 @@ wi["A1"] = "Assumptions and parameters"; wi["A1"].font = font(bold=True, size=13
 params = [
  ("COURSE", None, None, None),
  ("Course rating (Green tees, men)", 59.9, "CR", "PUBLISHED: Golfify / 18Birdies listings for Fox Creek Golf Club, Smyrna GA (Green 3,802 yds, 59.9 / 105). Confirm in the GHIN course lookup."),
- ("Good-day gap added to the CR target", 0, "GOOD", "0 = calibrate to the Course Rating itself (a scratch golfer's good day, your choice). Set ~2.5 to calibrate to an AVERAGE scratch round instead."),
+ ("Good-day gap added to the CR target", 2.4, "GOOD", "DERIVED. A Course Rating is a scratch golfer's good day: a Handicap Index uses the best 8 of 20 differentials, and the mean of the best 8 of 20 normal draws sits 0.93 sigma below the mean. With a scratch round-to-round sigma of ~2.6 strokes, CR + 2.4 is an AVERAGE scratch round, which is what the Shot Scope / Arccos tables describe. Set 0 to calibrate to the CR itself."),
  ("Stroke-index weight (0 = spread evenly, 1 = fully by SI)", 0, "LAMBDA", "How the course adjustment is spread across holes. ASSUMPTION."),
  ("Off-green anchor E for spreading the hole adjustment", 1.85, "G0", "A shot's share of the hole adjustment = (E - G0)/(E_tee - G0), 0 on the green. 1.85 ~ scratch putts per GIR (Shot Scope). ASSUMPTION."),
  ("Teed-ball bonus on par-3 tee shots (strokes)", 0, "TEEB", "Positive = a teed ball is easier than the same yardage from the fairway. Tour data actually runs the other way (par-3 tee shots ~0.1 HARDER than same-length fairway shots, because of guarded greens), so 0 is used and the course calibration absorbs Fox Creek specifics. ASSUMPTION."),

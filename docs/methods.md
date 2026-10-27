@@ -17,12 +17,9 @@ header-includes:
 
 Strokes gained measures how many strokes a shot saved relative to a baseline golfer: a shot's value is the expected strokes to hole out from where it started, minus the expected strokes from where it finished, minus one. The framework is Mark Broadie's and it is the right way to decompose a score. The question is who the baseline golfer is and what course they are playing.
 
-Consumer apps score an amateur against a PGA Tour player, using the same tables on every course. For a player trying to reach scratch, that creates two problems.
+For a player trying to reach scratch, the natural baseline is a scratch golfer, and the natural course is the one being played. Standard strokes-gained tables are course-blind: a 356-yard par 4 with out of bounds on both sides of a 45-yard corridor is scored like a 356-yard par 4 with open rough, so the layup a good player would choose on the first is marked as a poor tee shot. The tables are also built from a single population, which fixes what "zero" means; the gap between a scratch golfer and the PGA Tour is three to four strokes a round and sits mostly in approach play, so the choice of population changes which part of a game looks weak.
 
-1. **The wrong target.** The gap between scratch and tour is three to four strokes a round, concentrated in approach play. Measuring against tour tells a 9-handicap how far they are from a PGA Tour card, not from scratch.
-2. **No knowledge of the course.** A 356-yard par 4 with out of bounds on both sides of a 45-yard corridor is not the same hole as a 356-yard par 4 with open rough. A scratch golfer lays up on the first; a course-blind table expects a driver and scores a correct layup as a poor shot.
-
-This note builds the baseline for a **scratch golfer on a specific course**. The expected-strokes tables come from published scratch statistics (Shot Scope, Arccos). Tee shots on par 4s and 5s come from a decision model that knows the corridor width and where the trouble is. Hole expectations are then calibrated so the eighteen holes sum to the USGA course rating. Worked example: Fox Creek Golf Club, Smyrna GA, Green tees, 3,802 yards, par 62, rating 59.9.
+This note builds the baseline for a **scratch golfer on a specific course**. The expected-strokes tables come from published scratch statistics (Shot Scope, Arccos). Tee shots on par 4s and 5s come from a decision model that knows the corridor width and where the trouble is. Hole expectations are then calibrated so the eighteen holes sum to the USGA course rating, converted from a good-day score to an average one. Worked example: Fox Creek Golf Club, Smyrna GA, Green tees, 3,802 yards, par 62, rating 59.9.
 
 Notation: $E(\text{lie}, d)$ is the expected number of strokes for the baseline golfer to hole out. Distances are in yards except on the green, where $d$ is in feet.
 
@@ -126,30 +123,34 @@ with $E_{\text{in}} = 0.7\,E_F(L) + 0.3\,E_R(L)$ and $L = \max(\text{hole length
 
 # 6. Calibration to the course rating
 
-The raw hole values sum to 64.15 at Fox Creek. The target is the course rating, 59.9, which is a scratch golfer's good day. The gap is spread over holes with weights that sum to one for any $\lambda$ (171 is the sum of 1 to 18):
+The raw hole values sum to 64.15 at Fox Creek. The course rating, 59.9, is a scratch golfer's *good* day, not an average one: a Handicap Index is built from the best 8 of 20 differentials, and the expected mean of the best 8 of 20 normal draws sits $0.93\sigma$ below the mean. With a scratch golfer's round-to-round standard deviation of about 2.6 strokes, an average scratch round is
 
-$$a_h = \Big(\text{CR} - \textstyle\sum_h E_h^{\text{raw}}\Big)\,\omega_h,
+$$\text{target} = \text{CR} + 0.93 \times 2.6 \approx \text{CR} + 2.4 = 62.3$$
+
+which is the population the Shot Scope and Arccos tables describe. The remaining gap, $62.3 - 64.15 = -1.85$, is the course itself playing easier than its yardages for a scratch golfer, and it is spread over holes with weights that sum to one for any $\lambda$ (171 is the sum of 1 to 18):
+
+$$a_h = \Big(\text{target} - \textstyle\sum_h E_h^{\text{raw}}\Big)\,\omega_h,
 \qquad
 \omega_h = \frac{1-\lambda}{18} + \lambda\,\frac{19 - \text{SI}_h}{171}$$
 
-With $\lambda = 0$ every hole gets $a_h = -0.236$. A negative adjustment means the course plays easier than a generic course with the same hole lengths once tightness is already in the tee model; about 2.5 of the 4.25 gap is the good-day shift, the rest is short, wedge-length par 3s.
+With $\lambda = 0$ every hole gets $a_h = -0.10$. A negative adjustment means the course plays easier than a generic course with the same hole lengths once tightness is already in the tee model; at Fox Creek that is mostly the short, wedge-length par 3s.
 
 Within a hole, each position gets an adjusted expectation $E' = E + a_h\,w$ with
 
 $$w = \begin{cases} 1 & \text{tee} \\ 0 & \text{on the green} \\ \operatorname{clip}\!\left[\dfrac{E - g_0}{E_{\text{tee}} - g_0},\ 0,\ 1\right] & \text{otherwise} \end{cases}, \qquad g_0 = 1.85$$
 
-Summing SG over a hole telescopes to $E_h^{\text{raw}} + a_h - \text{strokes}$ regardless of $w$, so over eighteen holes total SG is exactly $\text{CR} - \text{score}$. Because $w = 0$ on the green, putting strokes gained never carries a course adjustment: zero in the putting column means putting like the published scratch data.
+Summing SG over a hole telescopes to $E_h^{\text{raw}} + a_h - \text{strokes}$ regardless of $w$, so over eighteen holes total SG is exactly $\text{target} - \text{score} = \text{CR} + 2.4 - \text{score}$. Because $w = 0$ on the green, putting strokes gained never carries a course adjustment: zero in the putting column means putting like the published scratch data.
 
 # 7. Worked example: hole 1, driver to 102 yards in the fairway
 
 | Shot | $E'(\text{start})$ | $E'(\text{end})$ | SG |
 |:-----|:------------------:|:----------------:|:--:|
-| Drive, tee to fairway at 102 yds | $4.55 - 0.236 = 4.31$ | $3.03 - 0.236 \times 0.44 = 2.93$ | $+0.38$ |
-| Wedge, 102 yds to 22 ft | 2.93 | $E_G(22) = 1.95$ | $-0.02$ |
+| Drive, tee to fairway at 102 yds | $4.55 - 0.10 = 4.45$ | $3.03 - 0.10 \times 0.44 = 2.99$ | $+0.46$ |
+| Wedge, 102 yds to 22 ft | 2.99 | $E_G(22) = 1.95$ | $+0.04$ |
 | First putt, 22 ft to 3 ft | 1.95 | 1.06 | $-0.11$ |
 | Second putt, holed | 1.06 | 0 | $+0.06$ |
 
-The drive beats the scratch baseline, a 5-iron layup, by about 0.4 strokes. The weight on the 102-yard position is $w = (3.03 - 1.85)/(4.55 - 1.85) = 0.44$; the putts carry no adjustment.
+The drive beats the scratch baseline, a 5-iron layup, by about half a stroke. The weight on the 102-yard position is $w = (3.03 - 1.85)/(4.55 - 1.85) = 0.44$; the putts carry no adjustment.
 
 # 8. What is data and what is assumption
 
